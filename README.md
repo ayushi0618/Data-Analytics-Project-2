@@ -2,7 +2,7 @@
 
 An end-to-end data analytics project built on real transaction records from the Brazilian e-commerce marketplace Olist, cleaned and modelled to examine merchandise sales patterns, geographic concentration, the relationship between fulfillment duration and customer satisfaction, and buyer retention dynamics.
 
-> 🌐 **Live Interactive Dashboard:** [https://data-analytics-project-2-euhenhxfrokktgat4nhfhv.streamlit.app/](https://data-analytics-project-2-euhenhxfrokktgat4nhfhv.streamlit.app/)  
+> 🌐 **Live Interactive Dashboard:** [streamlit link](https://data-analytics-project-2-euhenhxfrokktgat4nhfhv.streamlit.app/)  
 > 📄 **Executive Project Document (PDF):** [Google Drive](https://drive.google.com/file/d/11IBUTnnbd6YbFqTW3roRHBF2nVkDegya/view?usp=drivesdk)  
 > 📊 **Excel Analytical Workbook:** [Google Sheets / Drive](https://docs.google.com/spreadsheets/d/1KDrA8lUVef3bM692K-iXKCeDN5y14r9A/edit?usp=drivesdk)  
 > ⚖️ **Licence:** [MIT License](LICENSE) (Code) | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) (Dataset)
