@@ -2,11 +2,17 @@
 
 An end-to-end data analytics project built on real transaction records from the Brazilian e-commerce marketplace Olist, cleaned and modelled to examine merchandise sales patterns, geographic concentration, the relationship between fulfillment duration and customer satisfaction, and buyer retention dynamics.
 
+> 🌐 **Live Interactive Dashboard:** [https://data-analytics-project-2-euhenhxfrokktgat4nhfhv.streamlit.app/](https://data-analytics-project-2-euhenhxfrokktgat4nhfhv.streamlit.app/)  
+> 📄 **Executive Project Document (PDF):** [Google Drive](https://drive.google.com/file/d/11IBUTnnbd6YbFqTW3roRHBF2nVkDegya/view?usp=drivesdk)  
+> 📊 **Excel Analytical Workbook:** [Google Sheets / Drive](https://docs.google.com/spreadsheets/d/1KDrA8lUVef3bM692K-iXKCeDN5y14r9A/edit?usp=drivesdk)  
+> ⚖️ **Licence:** [MIT License](LICENSE) (Code) | [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) (Dataset)
+
 ---
 
 ## Source and Licence
 - **Source:** Kaggle [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) (`olistbr/brazilian-ecommerce`)
-- **Licence:** Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)
+- **Dataset Licence:** Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International ([CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/))
+- **Codebase Licence:** [MIT License](LICENSE)
 - **Public Mirror:** `https://github.com/olist/work-at-olist-data`
 
 ---
@@ -58,6 +64,8 @@ All revenue and operational metrics are evaluated strictly on successfully deliv
 ---
 
 ## Deliverable Links
+- **Live Interactive Dashboard:**  
+  [https://data-analytics-project-2-euhenhxfrokktgat4nhfhv.streamlit.app/](https://data-analytics-project-2-euhenhxfrokktgat4nhfhv.streamlit.app/)
 - **Project Document (13 pages, PDF):**  
   [https://drive.google.com/file/d/11IBUTnnbd6YbFqTW3roRHBF2nVkDegya/view?usp=drivesdk](https://drive.google.com/file/d/11IBUTnnbd6YbFqTW3roRHBF2nVkDegya/view?usp=drivesdk)
 - **Excel Workbook:**  
@@ -70,12 +78,15 @@ All revenue and operational metrics are evaluated strictly on successfully deliv
 ```
 .
 ├── README.md                              # Executive summary, findings, and project documentation
+├── LICENSE                                # MIT License for open source project code
+├── requirements.txt                       # Root Python dependencies for cloud deployment
+├── .streamlit/
+│   └── config.toml                        # Safe UI and server settings (light theme, headless)
 ├── .gitignore                             # Git exclusion rules for large datasets, binaries, and virtual environments
 ├── build_olist.py                         # Re-runnable ETL and star-schema modeling script (verifies Gates 1 & 2)
 ├── generate_charts.py                     # Generates all 7 high-resolution matplotlib charts
 ├── build_excel.py                         # Builds Excel workbook with live formulas and native charts (verifies Gate 3)
 ├── build_pdf.py                           # Compiles the 13-page executive project document PDF
-├── DATA_AGENT_KIT_STEPS.md                # BigQuery and Cloud Run deployment protocol & telemetry notice
 ├── data/
 │   └── clean/                             # Clean analytical tables & summary metadata
 │       ├── monthly.csv                    # Full calendar Sep 2016 – Oct 2018 (26 months)
@@ -138,9 +149,13 @@ Power Query M code (`powerbi/Power_Query_M.txt`), 16 core DAX measures (`powerbi
 
 ---
 
-## Cloud Status (Honest Assessment)
-Live demo: deployed FREE on Streamlit Community Cloud from this repo (no billing, no credit card). The app reads the verified CSVs in data/clean/. No BigQuery, no Cloud Run, and no .pbix is claimed here — Power BI is built separately in Power BI Desktop from powerbi/.
-This repository does NOT claim live streaming data, customer acquisition cost (CAC), LTV:CAC ratios, profit margins, or predictive sales forecasts. Delivered transactions terminate in August 2018; this is a historical analysis.
+## Live Dashboard & Cloud Status (Honest Assessment)
+- **Live URL:** [https://data-analytics-project-2-euhenhxfrokktgat4nhfhv.streamlit.app/](https://data-analytics-project-2-euhenhxfrokktgat4nhfhv.streamlit.app/)
+- **Hosting Platform:** Deployed 100% FREE on Streamlit Community Cloud directly from this GitHub repository (`ayushi0618/Data-Analytics-Project-2`, branch `main`).
+- **Data Source for App:** The app reads verified analytical tables directly from `data/clean/`.
+- **Infrastructure Scope:** No Google Cloud project, no BigQuery instance, and no Cloud Run container are used or billed. No credit card or paid service was required.
+- **Service Characteristics:** On Streamlit Community Cloud free tier, the application may sleep when idle and take 20–30 seconds to wake on the first visit.
+- **Analytical Scope:** This repository does NOT claim live streaming data, customer acquisition cost (CAC), LTV:CAC ratios, profit margins, or predictive sales forecasts. Delivered transactions terminate in August 2018; this is a historical analysis.
 
 ---
 
@@ -150,3 +165,10 @@ This repository does NOT claim live streaming data, customer acquisition cost (C
 - **Missing Delivery Dates:** 2,965 missing delivery dates and 160 missing approval dates preserved as missing; never imputed or fabricated.
 - **Geolocation Excluded:** `olist_geolocation_dataset.csv` (1,000,163 rows, 59 MB) excluded from the relational model as state and city are already present in customer and seller tables.
 - **Revenue Scope:** GMV is strictly confined to delivered orders (96,478 orders). Non-delivered statuses (cancelled: 625, unavailable: 609, shipped: 1,107, invoiced: 314, processing: 301, created: 5, approved: 2) are counted in status summaries but never in GMV.
+
+---
+
+## Licence
+
+- **Software / Codebase:** Distributed under the [MIT License](LICENSE).
+- **Dataset:** Brazilian E-Commerce Public Dataset by Olist is distributed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)](https://creativecommons.org/licenses/by-nc-sa/4.0/) license.
