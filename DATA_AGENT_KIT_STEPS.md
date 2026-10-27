@@ -1,3 +1,5 @@
+> **SUPERSEDED — I chose the free Streamlit Cloud route instead of Google Cloud, so the BigQuery/Cloud Run steps in this file are NOT to be followed.**
+
 # Google Cloud Data Agent Kit & BigQuery Deployment Guide
 **Project:** Olist Brazilian E-Commerce Analytics  
 **Author:** Ayushi Singh, Data Analyst  

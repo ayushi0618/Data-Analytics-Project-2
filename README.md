@@ -139,7 +139,8 @@ Power Query M code (`powerbi/Power_Query_M.txt`), 16 core DAX measures (`powerbi
 ---
 
 ## Cloud Status (Honest Assessment)
-The Streamlit application runs locally from the verified CSV files in `data/clean/`. Google Cloud BigQuery upload and Google Cloud Run deployment are pending Google sign-in and billing setup on the deployment environment; no live Cloud Run URL is claimed. This repository does NOT claim live streaming data, customer acquisition cost (CAC), LTV:CAC ratios, profit margins, or predictive sales forecasts. Delivered transactions terminate in August 2018; this is a historical analysis.
+Live demo: deployed FREE on Streamlit Community Cloud from this repo (no billing, no credit card). The app reads the verified CSVs in data/clean/. No BigQuery, no Cloud Run, and no .pbix is claimed here — Power BI is built separately in Power BI Desktop from powerbi/.
+This repository does NOT claim live streaming data, customer acquisition cost (CAC), LTV:CAC ratios, profit margins, or predictive sales forecasts. Delivered transactions terminate in August 2018; this is a historical analysis.
 
 ---
 
