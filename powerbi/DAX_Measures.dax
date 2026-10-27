@@ -1,0 +1,187 @@
+// ==============================================================================
+// OLIST BRAZILIAN E-COMMERCE ANALYTICS — CORE DAX MEASURES
+// Author: Ayushi Singh, Data Analyst
+// Source: Kaggle (olistbr/brazilian-ecommerce, CC BY-NC-SA 4.0)
+// Scope: Strictly Delivered Orders Only (No hardcoded totals; all dynamic with DIVIDE)
+// ==============================================================================
+
+// ------------------------------------------------------------------------------
+// MEASURE 1: Delivered Orders
+// Verified Value: 96,478
+// ------------------------------------------------------------------------------
+Delivered Orders = 
+CALCULATE(
+    DISTINCTCOUNT(Fact_Orders[order_id]),
+    Fact_Orders[is_delivered] = TRUE()
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 2: Delivered GMV (BRL)
+// Verified Value: R$ 13,221,498.11
+// ------------------------------------------------------------------------------
+Delivered GMV = 
+CALCULATE(
+    SUM(Fact_Orders[gmv]),
+    Fact_Orders[is_delivered] = TRUE()
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 3: Delivered Freight (BRL)
+// Verified Value: R$ 2,202,965.54
+// ------------------------------------------------------------------------------
+Delivered Freight = 
+CALCULATE(
+    SUM(Fact_Orders[freight]),
+    Fact_Orders[is_delivered] = TRUE()
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 4: Delivered Customer Payments (BRL)
+// Verified Value: R$ 15,422,461.77
+// ------------------------------------------------------------------------------
+Delivered Payments = 
+CALCULATE(
+    SUM(Fact_Orders[payment_value]),
+    Fact_Orders[is_delivered] = TRUE()
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 5: Financial Reconciliation Discrepancy (BRL)
+// Verified Value: R$ 2,001.88
+// ------------------------------------------------------------------------------
+Reconciliation Difference = 
+([Delivered GMV] + [Delivered Freight]) - [Delivered Payments]
+
+// ------------------------------------------------------------------------------
+// MEASURE 6: Unique Delivered Customers
+// Verified Value: 93,358
+// ------------------------------------------------------------------------------
+Unique Customers = 
+CALCULATE(
+    DISTINCTCOUNT(Fact_Orders[customer_unique_id]),
+    Fact_Orders[is_delivered] = TRUE()
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 7: Average Order Value (AOV)
+// Verified Value: R$ 137.04
+// ------------------------------------------------------------------------------
+Avg Order Value = 
+DIVIDE(
+    [Delivered GMV],
+    [Delivered Orders],
+    0.0
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 8: Average Review Score (1.0 to 5.0)
+// Verified Value: 4.16 / 5.00
+// ------------------------------------------------------------------------------
+Avg Review Score = 
+CALCULATE(
+    AVERAGE(Fact_Orders[review_score]),
+    Fact_Orders[is_delivered] = TRUE(),
+    NOT(ISBLANK(Fact_Orders[review_score]))
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 9: Share of 5-Star Reviews (%)
+// Verified Value: 58.6% of delivered orders
+// ------------------------------------------------------------------------------
+Share 5-Star = 
+VAR FiveStarCount = 
+    CALCULATE(
+        COUNTROWS(Fact_Orders),
+        Fact_Orders[is_delivered] = TRUE(),
+        Fact_Orders[review_score] = 5
+    )
+RETURN
+    DIVIDE(
+        FiveStarCount,
+        [Delivered Orders],
+        0.0
+    )
+
+// ------------------------------------------------------------------------------
+// MEASURE 10: Late Orders Count
+// Verified Value: 7,827 late orders
+// ------------------------------------------------------------------------------
+Late Orders = 
+CALCULATE(
+    COUNTROWS(Fact_Orders),
+    Fact_Orders[is_delivered] = TRUE(),
+    Fact_Orders[is_late] = TRUE()
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 11: Late Delivery Rate (%)
+// Verified Value: 8.11%
+// ------------------------------------------------------------------------------
+Late Rate = 
+DIVIDE(
+    [Late Orders],
+    [Delivered Orders],
+    0.0
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 12: Average Delivery Duration (Days)
+// Verified Value: 12.56 days
+// ------------------------------------------------------------------------------
+Avg Delivery Days = 
+CALCULATE(
+    AVERAGE(Fact_Orders[days_to_delivery]),
+    Fact_Orders[is_delivered] = TRUE(),
+    NOT(ISBLANK(Fact_Orders[days_to_delivery]))
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 13: Median Delivery Duration (Days)
+// Verified Value: 10.22 days
+// ------------------------------------------------------------------------------
+Median Delivery Days = 
+CALCULATE(
+    MEDIAN(Fact_Orders[days_to_delivery]),
+    Fact_Orders[is_delivered] = TRUE(),
+    NOT(ISBLANK(Fact_Orders[days_to_delivery]))
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 14: On-Time Orders Average Review
+// Verified Value: 4.30 stars
+// ------------------------------------------------------------------------------
+OnTime Avg Review = 
+CALCULATE(
+    [Avg Review Score],
+    Fact_Orders[is_late] = FALSE()
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 15: Late Orders Average Review
+// Verified Value: 2.57 stars
+// ------------------------------------------------------------------------------
+Late Avg Review = 
+CALCULATE(
+    [Avg Review Score],
+    Fact_Orders[is_late] = TRUE()
+)
+
+// ------------------------------------------------------------------------------
+// MEASURE 16: Repeat Customer Rate (%)
+// Verified Value: 3.0% (2,801 repeat customers out of 93,358)
+// ------------------------------------------------------------------------------
+Repeat Customer Rate = 
+VAR TotalCust = [Unique Customers]
+VAR RepeatCust = 
+    COUNTROWS(
+        FILTER(
+            VALUES(Fact_Orders[customer_unique_id]),
+            CALCULATE(DISTINCTCOUNT(Fact_Orders[order_id])) > 1
+        )
+    )
+RETURN
+    DIVIDE(
+        RepeatCust,
+        TotalCust,
+        0.0
+    )

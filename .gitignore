@@ -1,0 +1,12 @@
+data/raw/
+data/clean/fact_orders.csv
+data/clean/fact_order_items.csv
+data/clean/dim_product.csv
+*.pdf
+*.xlsx
+__pycache__/
+.venv/
+venv/
+temp_repo/
+*.log
+.kaggle/

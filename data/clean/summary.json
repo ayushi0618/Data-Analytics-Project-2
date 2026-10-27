@@ -1,0 +1,165 @@
+{
+  "project": "Olist Brazilian E-Commerce Analytics",
+  "source": "Kaggle olistbr/brazilian-ecommerce (CC BY-NC-SA 4.0)",
+  "author": "Ayushi Singh, Data Analyst",
+  "verification_gate_1": {
+    "orders": {
+      "actual": 99441,
+      "expected": 99441,
+      "pass": true
+    },
+    "items": {
+      "actual": 112650,
+      "expected": 112650,
+      "pass": true
+    },
+    "payments": {
+      "actual": 103886,
+      "expected": 103886,
+      "pass": true
+    },
+    "reviews": {
+      "actual": 99224,
+      "expected": 99224,
+      "pass": true
+    },
+    "customers": {
+      "actual": 99441,
+      "expected": 99441,
+      "pass": true
+    },
+    "products": {
+      "actual": 32951,
+      "expected": 32951,
+      "pass": true
+    },
+    "sellers": {
+      "actual": 3095,
+      "expected": 3095,
+      "pass": true
+    }
+  },
+  "verification_gate_2": {
+    "delivered_gmv": 13221498.11,
+    "delivered_freight": 2202965.54,
+    "delivered_payments": 15422461.77,
+    "reconciliation_diff": 2001.879999998957,
+    "delivered_orders": 96478,
+    "unique_customers": 93358,
+    "aov": 137.0415857501192,
+    "avg_review": 4.158054774986369,
+    "share_5star": 58.584340471402804,
+    "late_rate": 8.111693857667031,
+    "avg_delivery_days": 12.558217098051975,
+    "median_delivery_days": 10.217476851851853,
+    "late_orders_avg_review": 2.565874162616577,
+    "ontime_orders_avg_review": 4.296174751307558,
+    "top_category": {
+      "name": "health_beauty",
+      "gmv": 1233131.72
+    },
+    "top_state": {
+      "name": "SP",
+      "gmv": 5067633.16
+    },
+    "repeat_customer_share": 3.0002784978255748
+  },
+  "status_counts": {
+    "delivered": 96478,
+    "shipped": 1107,
+    "canceled": 625,
+    "unavailable": 609,
+    "invoiced": 314,
+    "processing": 301,
+    "created": 5,
+    "approved": 2
+  },
+  "cleaning_log": [
+    {
+      "step": "Order Status Filtering",
+      "rule": "Revenue / GMV scope is strictly delivered orders",
+      "records_before": 99441,
+      "records_after": 96478,
+      "dropped_or_affected": 2963,
+      "notes": "Delivered: 96,478; Shipped: 1107; Canceled: 625; Unavailable: 609; Invoiced: 314; Processing: 301; Created: 5; Approved: 2"
+    },
+    {
+      "step": "Missing Dates Policy",
+      "rule": "Preserve missing delivery and approval dates as null (never impute or invent dates)",
+      "records_before": 99441,
+      "records_after": 99441,
+      "dropped_or_affected": 0,
+      "notes": "Missing delivery dates preserved: 2965 (expect 2,965); Missing approval dates: 160 (expect 160)"
+    },
+    {
+      "step": "Review Deduplication - Part 1",
+      "rule": "Drop duplicate review_id rows",
+      "records_before": 99224,
+      "records_after": 98410,
+      "dropped_or_affected": 814,
+      "notes": "Dropped exact duplicate review_id records (expected 814)"
+    },
+    {
+      "step": "Review Deduplication - Part 2",
+      "rule": "Keep first review per order for multi-review orders",
+      "records_before": 98410,
+      "records_after": 98167,
+      "dropped_or_affected": 243,
+      "notes": "Dropped subsequent reviews for same order_id, retaining first (expected 243)"
+    },
+    {
+      "step": "Product Category Translation",
+      "rule": "Translate Portuguese categories to English; map missing or untranslated to 'Unknown'",
+      "records_before": 32951,
+      "records_after": 32951,
+      "dropped_or_affected": 0,
+      "notes": "Missing PT category: 610 (expect 610); Total 'Unknown' English category: 623 (expect 623)"
+    },
+    {
+      "step": "Model Dimensionality Reduction",
+      "rule": "Exclude olist_geolocation_dataset.csv from relational model; use customer/seller state and city directly",
+      "records_before": 1000163,
+      "records_after": 0,
+      "dropped_or_affected": 1000163,
+      "notes": "Excluded 1,000,163 geolocation records (59 MB) to maintain model performance and prevent state ambiguity"
+    }
+  ],
+  "key_findings": {
+    "delivery_review_driver": {
+      "avg_review_0_to_5d": 4.45,
+      "pct_5star_0_to_5d": 69.4,
+      "avg_review_30d_plus": 2.25,
+      "pct_5star_30d_plus": 15.9,
+      "state_late_rates": {
+        "SP": 5.9,
+        "RJ": 13.5,
+        "BA": 14.0,
+        "CE": 15.3
+      }
+    },
+    "customer_loyalty_gap": {
+      "repeat_customer_share_pct": 3.0,
+      "champions_count": 0,
+      "loyal_customers_count": 3699,
+      "loyal_customers_avg_spend": 409.15
+    },
+    "payment_methods_delivered": {
+      "credit_card": {
+        "gmv": 12101094.88,
+        "avg_installments": 3.5
+      },
+      "boleto": {
+        "gmv": 2769932.58,
+        "avg_installments": 1.0
+      },
+      "voucher": {
+        "gmv": 343013.19,
+        "avg_installments": 1.0
+      },
+      "debit_card": {
+        "gmv": 208421.12,
+        "avg_installments": 1.0
+      }
+    }
+  }
+}

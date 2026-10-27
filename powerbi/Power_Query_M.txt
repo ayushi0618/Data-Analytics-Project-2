@@ -1,0 +1,214 @@
+// ==============================================================================
+// OLIST BRAZILIAN E-COMMERCE ANALYTICS — POWER QUERY M TRANSFORMATION SCRIPT
+// Author: Ayushi Singh, Data Analyst
+// Source: Kaggle (olistbr/brazilian-ecommerce, CC BY-NC-SA 4.0)
+// Scope: Strictly Delivered Orders Only (96,478 Orders | GMV: R$ 13,221,498.11)
+// ==============================================================================
+
+// ------------------------------------------------------------------------------
+// PARAMETER: Base Data Directory Path (Adjust to your local folder path)
+// ------------------------------------------------------------------------------
+let
+    // Set this path to the location of data/clean/ on your local drive
+    CleanDataPath = "C:\Users\ayushi\Desktop\DA2\data\clean\"
+in
+    CleanDataPath;
+
+// ------------------------------------------------------------------------------
+// QUERY 1: Fact_Orders (Delivered Orders Only: 96,478 rows)
+// ------------------------------------------------------------------------------
+let
+    Source = Csv.Document(File.Contents(CleanDataPath & "fact_orders.csv"), [Delimiter=",", Columns=16, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ChangeTypes = Table.TransformColumnTypes(PromoteHeaders, {
+        {"order_id", type text},
+        {"customer_id", type text},
+        {"customer_unique_id", type text},
+        {"customer_city", type text},
+        {"customer_state", type text},
+        {"purchase_timestamp", type datetime},
+        {"delivered_customer_date", type datetime},
+        {"estimated_delivery_date", type datetime},
+        {"purchase_month", type text},
+        {"gmv", type number},
+        {"freight", type number},
+        {"payment_value", type number},
+        {"days_to_delivery", type number},
+        {"review_score", Int64.Type},
+        {"is_delivered", type logical},
+        {"is_late", type logical}
+    }),
+    AddPurchaseDate = Table.AddColumn(ChangeTypes, "purchase_date", each DateTime.Date([purchase_timestamp]), type date)
+in
+    AddPurchaseDate;
+
+// ------------------------------------------------------------------------------
+// QUERY 2: Fact_Order_Items (Delivered Items Only: 110,197 rows)
+// ------------------------------------------------------------------------------
+let
+    Source = Csv.Document(File.Contents(CleanDataPath & "fact_order_items.csv"), [Delimiter=",", Columns=8, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ChangeTypes = Table.TransformColumnTypes(PromoteHeaders, {
+        {"order_id", type text},
+        {"order_item_id", Int64.Type},
+        {"product_id", type text},
+        {"seller_id", type text},
+        {"shipping_limit_date", type datetime},
+        {"price", type number},
+        {"freight_value", type number},
+        {"category_en", type text}
+    })
+in
+    ChangeTypes;
+
+// ------------------------------------------------------------------------------
+// QUERY 3: Dim_Customer (Unique Customers: 93,358 rows)
+// ------------------------------------------------------------------------------
+let
+    Source = Csv.Document(File.Contents(CleanDataPath & "rfm_customers.csv"), [Delimiter=",", Columns=9, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ChangeTypes = Table.TransformColumnTypes(PromoteHeaders, {
+        {"customer_unique_id", type text},
+        {"last_purchase", type datetime},
+        {"frequency", Int64.Type},
+        {"monetary", type number},
+        {"recency_days", Int64.Type},
+        {"r_score", Int64.Type},
+        {"m_score", Int64.Type},
+        {"f_score", Int64.Type},
+        {"rfm_score", Int64.Type},
+        {"segment", type text}
+    })
+in
+    ChangeTypes;
+
+// ------------------------------------------------------------------------------
+// QUERY 4: Dim_Product (Products Catalog: 32,951 rows)
+// ------------------------------------------------------------------------------
+let
+    Source = Csv.Document(File.Contents(CleanDataPath & "dim_product.csv"), [Delimiter=",", Columns=10, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ChangeTypes = Table.TransformColumnTypes(PromoteHeaders, {
+        {"product_id", type text},
+        {"product_category_name", type text},
+        {"category_en", type text},
+        {"product_name_lenght", Int64.Type},
+        {"product_description_lenght", Int64.Type},
+        {"product_photos_qty", Int64.Type},
+        {"product_weight_g", type number},
+        {"product_length_cm", type number},
+        {"product_height_cm", type number},
+        {"product_width_cm", type number}
+    })
+in
+    ChangeTypes;
+
+// ------------------------------------------------------------------------------
+// QUERY 5: Dim_Date (Dynamic Calendar Table: 2016-09-01 to 2018-10-31)
+// ------------------------------------------------------------------------------
+let
+    StartDate = #date(2016, 9, 1),
+    EndDate = #date(2018, 10, 31),
+    DayCount = Duration.Days(Duration.From(EndDate - StartDate)) + 1,
+    DateList = List.Dates(StartDate, DayCount, #duration(1, 0, 0, 0)),
+    TableFromList = Table.FromList(DateList, Splitter.SplitByNothing(), {"Date"}, null, ExtraValues.Error),
+    ChangedType = Table.TransformColumnTypes(TableFromList, {{"Date", type date}}),
+    AddYear = Table.AddColumn(ChangedType, "Year", each Date.Year([Date]), Int64.Type),
+    AddMonth = Table.AddColumn(AddYear, "Month", each Date.Month([Date]), Int64.Type),
+    AddMonthName = Table.AddColumn(AddMonth, "Month Name", each Date.MonthName([Date]), type text),
+    AddYearMonth = Table.AddColumn(AddMonthName, "YearMonth", each Date.ToText([Date], "yyyy-MM"), type text),
+    AddMonthStart = Table.AddColumn(AddYearMonth, "Month Start", each Date.StartOfMonth([Date]), type date)
+in
+    AddMonthStart;
+
+// ------------------------------------------------------------------------------
+// QUERY 6: Summary_Monthly (Pre-aggregated Monthly Performance: 26 months)
+// ------------------------------------------------------------------------------
+let
+    Source = Csv.Document(File.Contents(CleanDataPath & "monthly.csv"), [Delimiter=",", Columns=9, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ChangeTypes = Table.TransformColumnTypes(PromoteHeaders, {
+        {"purchase_month", type text},
+        {"orders", Int64.Type},
+        {"gmv", type number},
+        {"freight", type number},
+        {"late_orders", Int64.Type},
+        {"avg_delivery_days", type number},
+        {"avg_review", type number},
+        {"avg_order_value", type number},
+        {"late_rate", type number}
+    })
+in
+    ChangeTypes;
+
+// ------------------------------------------------------------------------------
+// QUERY 7: Summary_Category (Category Performance: 72 categories)
+// ------------------------------------------------------------------------------
+let
+    Source = Csv.Document(File.Contents(CleanDataPath & "category.csv"), [Delimiter=",", Columns=6, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ChangeTypes = Table.TransformColumnTypes(PromoteHeaders, {
+        {"category_en", type text},
+        {"items_sold", Int64.Type},
+        {"gmv", type number},
+        {"freight", type number},
+        {"avg_item_price", type number},
+        {"share_of_gmv", type number}
+    })
+in
+    ChangeTypes;
+
+// ------------------------------------------------------------------------------
+// QUERY 8: Summary_State (Customer State Logistics: 27 states)
+// ------------------------------------------------------------------------------
+let
+    Source = Csv.Document(File.Contents(CleanDataPath & "state.csv"), [Delimiter=",", Columns=9, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ChangeTypes = Table.TransformColumnTypes(PromoteHeaders, {
+        {"customer_state", type text},
+        {"orders", Int64.Type},
+        {"gmv", type number},
+        {"freight", type number},
+        {"late_orders", Int64.Type},
+        {"avg_delivery_days", type number},
+        {"avg_review", type number},
+        {"late_rate", type number},
+        {"share_of_orders", type number},
+        {"share_of_gmv", type number}
+    })
+in
+    ChangeTypes;
+
+// ------------------------------------------------------------------------------
+// QUERY 9: Summary_Delivery_Review (6 Duration Buckets)
+// ------------------------------------------------------------------------------
+let
+    Source = Csv.Document(File.Contents(CleanDataPath & "delivery_vs_review.csv"), [Delimiter=",", Columns=6, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ChangeTypes = Table.TransformColumnTypes(PromoteHeaders, {
+        {"delivery_bucket", type text},
+        {"orders", Int64.Type},
+        {"avg_review", type number},
+        {"five_star_count", Int64.Type},
+        {"pct_5star", type number},
+        {"share_of_orders", type number}
+    })
+in
+    ChangeTypes;
+
+// ------------------------------------------------------------------------------
+// QUERY 10: Summary_RFM (6 Customer Segments)
+// ------------------------------------------------------------------------------
+let
+    Source = Csv.Document(File.Contents(CleanDataPath & "rfm_segments.csv"), [Delimiter=",", Columns=6, Encoding=65001, QuoteStyle=QuoteStyle.None]),
+    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    ChangeTypes = Table.TransformColumnTypes(PromoteHeaders, {
+        {"segment", type text},
+        {"customers", Int64.Type},
+        {"total_gmv", type number},
+        {"avg_spend", type number},
+        {"share_of_customers", type number},
+        {"share_of_gmv", type number}
+    })
+in
+    ChangeTypes;
